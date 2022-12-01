@@ -23,6 +23,19 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
+const users = {
+  userRandomID: {
+    id: "userRandomID",
+    email: "user@example.com",
+    password: "purple-monkey-dinosaur",
+  },
+  user2RandomID: {
+    id: "user2RandomID",
+    email: "user2@example.com",
+    password: "dishwasher-funk",
+  },
+};
+
 app.use(express.urlencoded({ extended: true }));
 
 app.get("/", (req, res) => {
@@ -102,7 +115,10 @@ app.post("/logout", (req, res) => {
   res.redirect("/urls");
 });
 
-// app.get("/registration", (req, res) => {
-//   const longURL = urlDatabase[req.params.id];
-//   res.redirect(longURL);
-// });
+app.get("/register", (req, res) => {
+  const password = req.body.password;
+  const email = req.body.email;
+  connsole.log(password)
+  connsole.log(email)
+  res.redirect("/urls");
+});
