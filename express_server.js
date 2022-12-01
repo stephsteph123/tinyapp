@@ -116,9 +116,23 @@ app.post("/logout", (req, res) => {
 });
 
 app.get("/register", (req, res) => {
-  const password = req.body.password;
-  const email = req.body.email;
-  connsole.log(password)
-  connsole.log(email)
-  res.redirect("/urls");
+  const templateVars = {
+  password: req.body.password,
+  email: req.body.email,
+  };
+  res.render("reg_page", templateVars);
 });
+
+app.post("/register", (req, res) => {
+  const password = req.body.password
+  let id = "";
+  let randomID = generateRandomString();
+  users[randomID] = {
+    id: randomID,
+    email: req.body.email,
+    password: password,
+  };
+  req.session.userID = randomID
+  console.log("user_id2", users[randomID].id)
+  res.redirect("/urls");
+})
