@@ -18,6 +18,17 @@ function generateRandomString() {
   return (str);
 }
 
+function emailAlready(email) {
+  for (item in users) {
+    if (email === users[item].email) {
+      return  true;
+    } else {
+      result = false;
+    }
+  }
+  return result;
+}
+
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
@@ -124,6 +135,13 @@ app.get("/register", (req, res) => {
 });
 
 app.post("/register", (req, res) => {
+  if(!req.body.email || !req.body.password) {
+    res.sendStatus(400);
+    console.log('hello')
+  } else if (emailAlready(req.body.email)) {
+    res.sendStatus(400);
+    console.log('email is already registered')
+  } else {
   const password = req.body.password
   let id = "";
   let randomID = generateRandomString();
@@ -135,4 +153,5 @@ app.post("/register", (req, res) => {
   req.session.userID = randomID
   console.log("user_id2", users[randomID].id)
   res.redirect("/urls");
-})
+}
+});
