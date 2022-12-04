@@ -10,28 +10,22 @@
       aria-expanded="false"
       aria-label="Toggle navigation"
     >
+
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
       <div class="navbar-nav">
         <a class="nav-item nav-link" href="/urls">My URLs</a>
         <a class="nav-item nav-link" href="/urls/new">Create New URL</a>
-          <% if("req.sessionID" !== "req.sessionID"){ %>
-            <form method="post" action="/login">
-            console.log("is this working")
-            <label for="login" style = "font-family: sans-serif; font-weight: 300; line-height: 2.5;color:#f9fafbf3; text-align: right;"><b>Username</b></label>
-            <input type="text" placeholder= "cant do this anymore" name="login" required>
-            <button type="submit" style="background-color:transparent; font-family:sans-serif; color:#f9fafbf3; text-align: right" >Login</button>
-          </form>
-            <% } else{ %>
-              <form method="post" action="/logout">
-              console.log("help")
-              <label for="logout" style = "font-family: sans-serif; font-weight: 300; line-height: 2.5;color:#f9fafbf3; text-align: right;"><b>Username</b></label>
-              <input type="text" placeholder= "ok" name="logout" required>
-              <button type="submit" style="background-color:transparent; font-family:sans-serif; color:#f9fafbf3; text-align: right" >Logout</button>
-            </form>
-              <% } %>
-          </form>
+        <a class="nav-item nav-link" href="/login">Login</a>
+        <a class="nav-item nav-link" href="/register">Registration</a>
+        <% if(email !== ""){ %>
+        <form method="post" action="/logout">
+          <label for="logout" style = "font-family: sans-serif; font-weight: 300; line-height: 2.5;color:#f9fafbf3; text-align: right;"><b></b></label>
+          <button type="submit" style="background-color:transparent; font-family:sans-serif; color:#f9fafbf3; text-align: right" >Logout</button>
+        </form>
+        <% } %>
+        </button>
       </div>
     </div>
   </nav>
