@@ -2,8 +2,8 @@
 const express = require("express");
 const PORT = 8080; // default port 8080
 const bodyParser = require('body-parser')
-var cookieParser = require('cookie-parser');
-var cookieSession = require('cookie-session');
+const cookieParser = require('cookie-parser');
+const cookieSession = require('cookie-session');
 const bcrypt = require('bcrypt');
 let numHash = 10;
 const session = require("express-session");
@@ -96,7 +96,7 @@ const usersDatabase = {
 app.use(express.urlencoded({ extended: true }));
 
 app.get("/", (req, res) => {
-  res.send("Hello!");
+  res.redirect("/login");
 });
 
 app.get("/urls.json", (req, res) => {
@@ -110,13 +110,13 @@ app.get("/hello", (req, res) => {
 app.get("/urls", (req, res) => {
   let userNow = req.session.userId
   if (!userNow) {
+    req.session.error = 'Please Login To Access All Pages';
     res.redirect('/login')
   } else {
   const templateVars = { 
     userId: req.session.userId,
     urls: urlsForUser(userNow),
   };
-  console.log(templateVars)
   res.render("urls_index", templateVars);
 }
 });
@@ -139,13 +139,13 @@ app.get("/urls/new", (req, res) => {
 });
 
 app.get("/urls/:id", (req, res) => {
-  var userId = req.params.userId;
-  var shortURL = req.params.id;
+  let userId = req.params.userId;
+  let shortURL = req.params.id;
   if (valueHelp(req.params.id) !== true) {
     res.sendStatus(403)
     console.log("shortURL does not exist in database")
   } else if (valueHelp(req.params.id) === true) {
-    var longURL = urlDatabase[shortURL].longURL
+    const longURL = urlDatabase[shortURL].longURL
     const templateVars = {shortURL, longURL, userId}
     res.render("urls_show", templateVars)
     }
@@ -158,14 +158,17 @@ app.get("/u/:id", (req, res) => {
 
 app.get("/login", (req, res) => {
   let userNow = req.session.userId
+  console.log("error message", req.session.error)
   if (userNow) {
     res.redirect('/urls')
   } else {
   let templateVars = {
   userId: req.session.userId,
   email: "",
+  error: req.session.error || null,
 };
-  res.render("login_page",templateVars)
+req.session.error = null;
+res.render("login_page",templateVars)
 }
 });
 
@@ -199,32 +202,33 @@ app.post("/register", (req, res) => {
     console.log('email is already registered')
   } else {
   usersDatabase[randomID] = {
-    userId: randomID,
-    userEmail: email,
-    userPassword: hashedPassword,
+    id: randomID,
+    email: email,
+    password: hashedPassword,
   }
-  usersDatabase[randomID] = { }
 }
+req.session.userId = randomID;
   res.redirect("/urls");
 });
 
 app.post("/login", (req, res) => {
-  var email = req.body.email;
-  let password = req.body.password;
+  const email = req.body.email;
+  const password = req.body.password;
   let userId = "";
-  for (let element in usersDatabase) {
-    if (usersDatabase[element]["email"] === email) {
-      userId= usersDatabase[element]["id"];
-      req.session.userId = userId;
+  for (let id in usersDatabase) {
+    if (usersDatabase[id]["email"] === email) {
+      userId= usersDatabase[id]["id"];
     }
   }
   if (userId === "") {
     console.log("user has to register")
     res.sendStatus(403);
-  } else if (bcrypt.compareSync(password, usersDatabase[userId]["password"]) === false) {
+  } else if (!bcrypt.compareSync(password, usersDatabase[userId]["password"])) {
       console.log("wrong password")
       res.sendStatus(403);
   } else {
+    req.session.userId = userId;
+    req.session.error = null;
     res.redirect("/urls")
   }
   });

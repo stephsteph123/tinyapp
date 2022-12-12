@@ -26,6 +26,9 @@
       <form class="" action="/login" method="POST">
         <div class="">
           <label for="email">Please Enter Your Username:<Address></Address></label>
+          <% if(error){ %>
+          <div class="alert alert-danger" role="alert"><%= error %></div>
+          <% } %>
           <input
             class="form"
             type="email"
@@ -63,19 +66,6 @@
   </body>
 </html>
 
-<!-- <% if(email === ''){ %> -->
-  <!-- <form method="post" action="/login">
-  <label for="login" style = "font-family: sans-serif; font-weight: 300; line-height: 2.5;color:#f9fafbf3; text-align: right;"><b>Username</b></label>
-  <input type="text" placeholder= "Username" name="login" required>
-  <button type="submit" style="background-color:transparent; font-family:sans-serif; color:#f9fafbf3; text-align: right" >Login</button>
-</form>
-  <% } else{ %>
-     <form method="post" action="/logout">
-    <label for="logout" style = "font-family: sans-serif; font-weight: 300; line-height: 2.5;color:#f9fafbf3; text-align: right;"><b>Welcome! <%= email %></b></label>
-    <input type="text" placeholder= "Welcome! <%= email %>" name="logout" required>
-    <button type="submit" style="background-color:transparent; font-family:sans-serif; color:#f9fafbf3; text-align: right" >Logout</button>
-  </form>
-    <% } %> --> 
 
 
 
