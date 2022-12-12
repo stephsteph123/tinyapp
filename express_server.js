@@ -157,11 +157,16 @@ app.get("/u/:id", (req, res) => {
 });
 
 app.get("/login", (req, res) => {
+  let userNow = req.session.userId
+  if (userNow) {
+    res.redirect('/urls')
+  } else {
   let templateVars = {
   userId: req.session.userId,
   email: "",
 };
   res.render("login_page",templateVars)
+}
 });
 
 app.get("/register", (req, res) => {
@@ -175,7 +180,7 @@ app.get("/register", (req, res) => {
   if (!userId) {
     res.render("reg_page", templateVars);
     } else {
-      res.redirect("/urls/new");
+      res.redirect("/urls");
     }
 });
 
