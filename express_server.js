@@ -127,10 +127,15 @@ app.get("/hello", (req, res) => {
 });
 
 app.get("/urls/new", (req, res) => {
+  let userNow = req.session.userId
+  if (!userNow) {
+    res.redirect('/login')
+  } else {
   const templateVars = { 
     userId: req.session.userId,
   };
   res.render("urls_new", templateVars);
+}
 });
 
 app.get("/urls/:id", (req, res) => {
