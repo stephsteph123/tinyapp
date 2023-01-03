@@ -1,12 +1,15 @@
 //Modules
-const express = require("express");
+const express = require('express');
 const PORT = 8080; // default port 8080
-const bodyParser = require('body-parser')
-const cookieParser = require('cookie-parser');
+const bodyParser = require('body-parser');
 const cookieSession = require('cookie-session');
 const bcrypt = require('bcrypt');
 let numHash = 10;
-const session = require("express-session");
+const {generateRandomString} =  require ('./helper');
+const {emailAlready} = require ('./helper');
+const {urlsForUser} = require ('./helper');
+const {usersDatabase} = require ('./user');
+const {urlDatabase} = require ('./database')
 
 const app = express();
 
@@ -18,79 +21,6 @@ app.use(cookieSession({
 }));
 
 app.set("view engine", "ejs");
-
-//Helper Functions
-
-function generateRandomString() {
-  let str = (Math.random() + 1).toString(36).substring(7);
-  return (str);
-}
-
-function emailAlready(email) {
-  for (item in usersDatabase) {
-    if (email === usersDatabase[item].email) {
-      return  true;
-    } else {
-      result = false;
-    }
-  }
-  return result;
-}
-
-function pWord(password) {
-  for (item in users) {
-    if (password === users[item].password) {
-      return  true;
-    } else {
-      result = false;
-    }
-  }
-  return result;
-}
-
-function valueHelp(id) {
-  if (urlDatabase[id]) {
-    return true;
-  }
-  return false
-}
-
-function urlsForUser(id) {
-  result = [];
-    for (let item in urlDatabase) {
-      if (urlDatabase[item]['userID'] === id) {
-        result.push({shortURL:item,...urlDatabase[item]})
-      }
-    }
-    return result
-  };
-
-//Databases
-const urlDatabase = {
-  b6UTxQ: {
-    longURL: "https://www.tsn.ca",
-    userID: "id123",
-  },
-  i3BoGr: {
-    longURL: "https://www.google.ca",
-    userID: "id456",
-  },
-};
-
-const usersDatabase = {
-  id123: {
-    id: "id123",
-    email: "user@example.com",
-    password: "$2b$10$BL3JjgIK0wqXMmlh0Hg8deu6ctQvjA9OSub9g5Rq7/Oh7lRQP00t2",
-
-  },
-  id456: {
-    id: "id456",
-    email: "user2@example.com",
-    password: "2b$10$3HBwpShW3JJI7N1yF.ZmaO4Xel0N/NoXUi0ZBDTD7njanfj8BxkIi",
-  },
-};
-
 
 //Get Routes
 app.use(express.urlencoded({ extended: true }));
@@ -139,17 +69,21 @@ app.get("/urls/new", (req, res) => {
 });
 
 app.get("/urls/:id", (req, res) => {
-  let userId = req.params.userId;
+  let userId = req.session.userId;
   let shortURL = req.params.id;
-  if (valueHelp(req.params.id) !== true) {
-    res.sendStatus(403)
-    console.log("shortURL does not exist in database")
-  } else if (valueHelp(req.params.id) === true) {
-    const longURL = urlDatabase[shortURL].longURL
-    const templateVars = {shortURL, longURL, userId}
-    res.render("urls_show", templateVars)
-    }
-  })
+  if (!req.session.userId) {
+    return res.redirect("/login")
+  }
+  if (!urlDatabase[req.params.id]) {
+    return res.status(400).send("short url does not exist")
+  }
+  if (req.session.userId !== urlDatabase[req.params.id].userID) {
+    return res.status(400).send ("this is not your URL")
+  }
+  const longURL = urlDatabase[shortURL].longURL
+  const templateVars = {shortURL, longURL, userId}
+  res.render("urls_show", templateVars)
+  });
 
 app.get("/u/:id", (req, res) => {
   const longURL = urlDatabase[req.params.id];
@@ -158,7 +92,6 @@ app.get("/u/:id", (req, res) => {
 
 app.get("/login", (req, res) => {
   let userNow = req.session.userId
-  console.log("error message", req.session.error)
   if (userNow) {
     res.redirect('/urls')
   } else {
@@ -195,11 +128,9 @@ app.post("/register", (req, res) => {
   let randomID = generateRandomString()
   let hashedPassword = bcrypt.hashSync(password, 10);
   if(!req.body.email || !req.body.password) {
-    res.sendStatus(400);
-    console.log('missing email or password')
+    res.status(400).send('missing email or password');
   } else if (emailAlready(req.body.email)) {
-    res.sendStatus(400);
-    console.log('email is already registered')
+    res.status(400).send('email is already registered');
   } else {
   usersDatabase[randomID] = {
     id: randomID,
@@ -221,11 +152,9 @@ app.post("/login", (req, res) => {
     }
   }
   if (userId === "") {
-    console.log("user has to register")
-    res.sendStatus(403);
+    res.status(403).send('user has to register');
   } else if (!bcrypt.compareSync(password, usersDatabase[userId]["password"])) {
-      console.log("wrong password")
-      res.sendStatus(403);
+      res.status(403).send("wrong password")
   } else {
     req.session.userId = userId;
     req.session.error = null;
