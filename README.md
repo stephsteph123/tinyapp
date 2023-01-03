@@ -10,7 +10,7 @@ TinyApp is a full stack web application built with Node and Express that allows 
 [Users can edit their URLs,](https://github.com/stephsteph123/tinyapp/blob/main/docs/edit_long_url.png)
 [Users can create new short URLs,](https://github.com/stephsteph123/tinyapp/blob/main/docs/create_new_url.png) -->
 
-!(https://github.com/stephsteph123/tinyapp/blob/main/docs/login_page.png "User login page,")
+(https://github.com/stephsteph123/tinyapp/blob/main/docs/login_page.png "User login page,")
 ![Where users register,](https://github.com/stephsteph123/tinyapp/blob/main/docs/reg_page.png "Where users register")
 ![Users can view their URLs once logged in,](https://github.com/stephsteph123/tinyapp/blob/main/docs/my_urls.png "Users can view their URLs once logged in")
 ![Users can edit their URLs,](https://github.com/stephsteph123/tinyapp/blob/main/docs/edit_long_url.png "Users can edit their URLs,")
