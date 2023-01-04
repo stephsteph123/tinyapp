@@ -9,12 +9,20 @@ TinyApp is a full stack web application built with Node and Express that allows 
 [Users can view their URLs once logged in,](https://github.com/stephsteph123/tinyapp/blob/main/docs/my_urls.png)
 [Users can edit their URLs,](https://github.com/stephsteph123/tinyapp/blob/main/docs/edit_long_url.png)
 [Users can create new short URLs,](https://github.com/stephsteph123/tinyapp/blob/main/docs/create_new_url.png) -->
-User login page
+User Login Page:
 ![User login page](https://github.com/stephsteph123/tinyapp/blob/main/docs/login_page.png)
-![Where users register](https://github.com/stephsteph123/tinyapp/blob/main/docs/reg_page.png )
-![Users can view their URLs once logged in](https://github.com/stephsteph123/tinyapp/blob/main/docs/my_urls.png "Users can view their URLs once logged in")
-![Users can edit their URLs,](https://github.com/stephsteph123/tinyapp/blob/main/docs/edit_long_url.png "Users can edit their URLs")
-![Users can create new short URLs](https://github.com/stephsteph123/tinyapp/blob/main/docs/create_new_url.png "Users can create new short URLs")
+
+Where Users Register:
+![Where users register](https://github.com/stephsteph123/tinyapp/blob/main/docs/reg_page.png)
+
+Users Can View Their URLs Once Logged In:
+![Users can view their URLs once logged in](https://github.com/stephsteph123/tinyapp/blob/main/docs/my_urls.png)
+
+Users Can Edit Their URLs:
+![Users can edit their URLs,](https://github.com/stephsteph123/tinyapp/blob/main/docs/edit_long_url.png)
+
+Users Can Create New Short URLs:
+![Users can create new short URLs](https://github.com/stephsteph123/tinyapp/blob/main/docs/create_new_url.png)
 
 
 ## Dependencies
