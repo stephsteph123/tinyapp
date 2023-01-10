@@ -44,7 +44,7 @@ app.get("/urls", (req, res) => {
     res.redirect('/login')
   } else {
   const templateVars = { 
-    userId: req.session.userId,
+    user: usersDatabase[req.session.userId],
     urls: urlsForUser(userNow),
   };
   res.render("urls_index", templateVars);
@@ -62,7 +62,7 @@ app.get("/urls/new", (req, res) => {
     res.redirect('/login')
   } else {
   const templateVars = { 
-    userId: req.session.userId,
+    user: usersDatabase[req.session.userId],
   };
   res.render("urls_new", templateVars);
 }
@@ -86,8 +86,10 @@ app.get("/urls/:id", (req, res) => {
   });
 
 app.get("/u/:id", (req, res) => {
-  const longURL = urlDatabase[req.params.id];
-  res.redirect(longURL);
+  const longURL = urlDatabase[req.params.id]
+  if (longURL) {
+    res.redirect(longURL['longURL']);
+  }
 });
 
 app.get("/login", (req, res) => {
@@ -96,7 +98,7 @@ app.get("/login", (req, res) => {
     res.redirect('/urls')
   } else {
   let templateVars = {
-  userId: req.session.userId,
+  user: usersDatabase[req.session.userId],
   email: "",
   error: req.session.error || null,
 };
@@ -110,8 +112,8 @@ app.get("/register", (req, res) => {
   password = req.body.password;
   userId = req.session.userId;
   const templateVars = {
-    userId: req.session.userId,
-     email: req.body.email,
+    user: usersDatabase[req.session.userId],
+    email: req.body.email,
   };
   if (!userId) {
     res.render("reg_page", templateVars);
@@ -158,6 +160,7 @@ app.post("/login", (req, res) => {
   } else {
     req.session.userId = userId;
     req.session.error = null;
+    req.body.email = email;
     res.redirect("/urls")
   }
   });
