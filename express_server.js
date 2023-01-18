@@ -38,14 +38,14 @@ app.get("/hello", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
-  let userNow = req.session.userId
+  let userNow = usersDatabase[req.session.userId]
   if (!userNow) {
     req.session.error = 'Please Login To Access All Pages';
     res.redirect('/login')
   } else {
   const templateVars = { 
     user: usersDatabase[req.session.userId],
-    urls: urlsForUser(userNow),
+    urls: urlsForUser(userNow.id),
   };
   res.render("urls_index", templateVars);
 }
@@ -57,31 +57,32 @@ app.get("/hello", (req, res) => {
 });
 
 app.get("/urls/new", (req, res) => {
-  let userNow = req.session.userId
+  let userNow = usersDatabase[req.session.userId]
   if (!userNow) {
     res.redirect('/login')
   } else {
   const templateVars = { 
-    user: usersDatabase[req.session.userId],
+    user: userNow,
   };
   res.render("urls_new", templateVars);
 }
 });
 
 app.get("/urls/:id", (req, res) => {
-  let userId = req.session.userId;
+  let userNow = usersDatabase[req.session.userId];
   let shortURL = req.params.id;
-  if (!req.session.userId) {
-    return res.redirect("/login")
+  if (!userNow) {
+    res.status(400).send("please login to access this page")
+    // return res.redirect("/login")
   }
   if (!urlDatabase[req.params.id]) {
     return res.status(400).send("short url does not exist")
   }
-  if (req.session.userId !== urlDatabase[req.params.id].userID) {
+  if (userNow.id !== urlDatabase[shortURL].userID) {
     return res.status(400).send ("this is not your URL")
   }
   const longURL = urlDatabase[shortURL].longURL
-  const templateVars = {shortURL, longURL, userId}
+  const templateVars = {shortURL, longURL, user: usersDatabase[userNow]}
   res.render("urls_show", templateVars)
   });
 
@@ -89,16 +90,18 @@ app.get("/u/:id", (req, res) => {
   const longURL = urlDatabase[req.params.id]
   if (longURL) {
     res.redirect(longURL['longURL']);
+  } else {
+    return res.status(400).send ("Does Not Exist")
   }
 });
 
 app.get("/login", (req, res) => {
-  let userNow = req.session.userId
+  let userNow = usersDatabase[req.session.userId]
   if (userNow) {
     res.redirect('/urls')
   } else {
   let templateVars = {
-  user: usersDatabase[req.session.userId],
+  user: userNow,
   email: "",
   error: req.session.error || null,
 };
@@ -110,9 +113,9 @@ res.render("login_page",templateVars)
 app.get("/register", (req, res) => {
   email = req.body.email;
   password = req.body.password;
-  userId = req.session.userId;
+  userId = usersDatabase[req.session.userId];
   const templateVars = {
-    user: usersDatabase[req.session.userId],
+    user: userId,
     email: req.body.email,
   };
   if (!userId) {
@@ -171,11 +174,11 @@ app.post("/logout", (req, res) => {
 });
 
 app.post("/urls", (req, res) => {
-  let userId = req.session.userId;
+  let userNow = req.session.userId;
   let longURL = req.body.longURL;
   let shortURL = generateRandomString();
-  urlDatabase[shortURL] = {longURL:longURL, userID: userId}
-  res.redirect("/urls");
+  urlDatabase[shortURL] = {longURL:longURL, userID: userNow}
+  res.redirect(`urls/${shortURL}`);
 });
 
 app.post("/urls/:id/delete", (req, res) => {

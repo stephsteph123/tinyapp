@@ -25,7 +25,7 @@
       <h3>Login</h3>
       <form class="" action="/login" method="POST">
         <div class="">
-          <label for="email">Please Enter Your Username:<Address></Address></label>
+          <label for="email">Please Enter Your Email:</label>
           <% if(error){ %>
           <div class="alert alert-danger" role="alert"><%= error %></div>
           <% } %>
@@ -33,9 +33,10 @@
             class="form"
             type="email"
             name="email"
-            placeholder="Username"
+            placeholder="Email"
             style="width: 300px; margin: 1em"
           />
+          <label for="password">Please Enter Your Password:</label>
           <input
             class="form"
             type="password"

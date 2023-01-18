@@ -34,7 +34,7 @@
             <tr>
               <td><%= item.shortURL %></td>
               <td><%= item.longURL %></td>
-              <td><a class="nav-item nav-link" href="/urls/<%= item.shortURL%>">Edit</a></td>
+              <td><form method="get" action="/urls/<%= item.shortURL%>"><input type="submit" value="Edit"></form></td>
               <td><form method="POST" action="/urls/<%= item.shortURL %>/delete"><input type="submit" value="Delete"> </form></td>
             </tr>
           <% }) %>
