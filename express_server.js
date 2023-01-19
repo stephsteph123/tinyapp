@@ -20,6 +20,11 @@ app.use(cookieSession({
   saveUninitialized: true
 }));
 
+app.use((req, res, next) => {
+  console.log("sessionListner", req.session)
+  next()
+})
+
 app.set("view engine", "ejs");
 
 //Get Routes
@@ -82,7 +87,7 @@ app.get("/urls/:id", (req, res) => {
     return res.status(400).send ("this is not your URL")
   }
   const longURL = urlDatabase[shortURL].longURL
-  const templateVars = {shortURL, longURL, user: usersDatabase[userNow]}
+  const templateVars = {shortURL, longURL, user: userNow}
   res.render("urls_show", templateVars)
   });
 
@@ -157,36 +162,53 @@ app.post("/login", (req, res) => {
     }
   }
   if (userId === "") {
-    res.status(403).send('user has to register');
-  } else if (!bcrypt.compareSync(password, usersDatabase[userId]["password"])) {
-      res.status(403).send("wrong password")
-  } else {
+    return res.status(403).send('user has to register');
+  }
+  if (!bcrypt.compareSync(password, usersDatabase[userId]["password"])) {
+    return res.status(403).send("wrong password")
+  }
     req.session.userId = userId;
     req.session.error = null;
     req.body.email = email;
     res.redirect("/urls")
-  }
   });
 
 app.post("/logout", (req, res) => {
-  req.session = null;
+  delete req.session.userId;
   res.redirect("/urls");
 });
 
 app.post("/urls", (req, res) => {
-  let userNow = req.session.userId;
+  const userNow = usersDatabase[req.session.userId]
+  if (!userNow) {
+    res.status(400).send("please login to access this page")
+  } 
   let longURL = req.body.longURL;
   let shortURL = generateRandomString();
-  urlDatabase[shortURL] = {longURL:longURL, userID: userNow}
+  urlDatabase[shortURL] = {longURL:longURL, userID: userNow.id}
   res.redirect(`urls/${shortURL}`);
 });
 
 app.post("/urls/:id/delete", (req, res) => {
+  const userNow = usersDatabase[req.session.userId]
+  if (!userNow) {
+    res.status(400).send("please login to access this page")
+  } 
+  if (userNow.id !== urlDatabase[shortURL].userID) {
+    return res.status(400).send ("this is not your URL")
+  }
   delete urlDatabase[req.params.id];
   res.redirect("/urls");
 });
 
-app.post("/urls/:id", (req, res) => { 
+app.post("/urls/:id", (req, res) => {
+  const userNow = usersDatabase[req.session.userId]
+  if (!userNow) {
+    res.status(400).send("please login to access this page")
+  } 
+  if (userNow.id !== urlDatabase[shortURL].userID) {
+    return res.status(400).send ("this is not your URL")
+  }
   const newUrl = req.body.longURL
   const shortUrl = req.params.id
   urlDatabase[shortUrl].longURL = newUrl;
